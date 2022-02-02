@@ -14,6 +14,9 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "./components/HeaderButton";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+//import  { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
+import "react-native-gesture-handler";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
 const fetchFonts = () => {
   return Fonts.loadAsync({
@@ -33,6 +36,11 @@ function StackScreen() {
         options={{
           title: "Categories",
           headerStyle: { backgroundColor: Color.primaryColor },
+          headerLeft: () => (
+            <HeaderButtons
+              HeaderButtonComponent={CustomHeaderButton}
+            ><Item title="Menu" iconName="ios-menu" onPress={() => {}}></Item></HeaderButtons>
+          ),
         }}
       />
       <Stack.Screen
@@ -77,6 +85,39 @@ function FavoriteStackScreen() {
 
 const Tab = createBottomTabNavigator();
 
+function tab() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({}) => {
+          let iconName;
+
+          if (route.name === "Meals") {
+            iconName = "ios-restaurant";
+          } else if (route.name === "favorite") {
+            iconName = "ios-star";
+          }
+          return (
+            <Ionicons name={iconName} size={25} color={Color.primaryColor} />
+          );
+        },
+      })}
+    >
+      <Tab.Screen name="Meals" component={StackScreen} />
+      <Tab.Screen name="favorite" component={FavoriteStackScreen} />
+    </Tab.Navigator>
+  );
+}
+
+const Drawer = createDrawerNavigator();
+function MyDrawer() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="meals" component={tab} />
+    </Drawer.Navigator>
+  );
+}
+
 export default function App() {
   const [fontLoaded, setFontLoaded] = useState(false);
   if (!fontLoaded) {
@@ -95,25 +136,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({}) => {
-            let iconName;
-
-            if (route.name === "Meals") {
-              iconName = "ios-restaurant";
-            } else if (route.name === "favorite") {
-              iconName = "ios-star";
-            }
-            return (
-              <Ionicons name={iconName} size={25} color={Color.primaryColor} />
-            );
-          },
-        })}
-      >
-        <Tab.Screen name="Meals" component={StackScreen} />
-        <Tab.Screen name="favorite" component={FavoriteStackScreen} />
-      </Tab.Navigator>
+      <MyDrawer />
     </NavigationContainer>
   );
 }
